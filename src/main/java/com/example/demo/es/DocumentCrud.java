@@ -8,7 +8,6 @@ import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.entity.ESDatas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,13 +25,32 @@ import java.util.Map;
 public class DocumentCrud {
     private Logger logger = LoggerFactory.getLogger(DocumentCrud.class);
 
-    @Autowired
-    private BBossESStarter bbossEsStarter;
+    private final BBossESStarter bbossEsStarter;
 
     /**
-     * DSL config file path
+     * DSL配置文件路径
      */
-    private String mapPath = "esmapper/demo.xml";
+    private String mapPath = "esmapper/test.xml";
+
+    public DocumentCrud(BBossESStarter bbossEsStarter) {
+        this.bbossEsStarter = bbossEsStarter;
+    }
+
+    /**
+     * 获取索引
+     */
+    public void getIndice() {
+        //Create a client tool to load configuration files, single instance multithreaded security
+        ClientInterface clientUtil = bbossEsStarter.getConfigRestClient(mapPath);
+
+        if (clientUtil.existIndice("test")) {
+            //获取指定索引
+            String testIndice = clientUtil.getIndice("test");
+            logger.info("索引testIndice = {}", testIndice);
+        } else {
+            logger.info("索引不存在");
+        }
+    }
 
     /**
      * 创建索引，如果索引已经存在则删除重建
